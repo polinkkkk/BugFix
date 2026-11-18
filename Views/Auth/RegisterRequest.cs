@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace BugFix.Api.Schemas.Auth;
+namespace BugFix.Api.Views.Auth;
 
 public sealed class RegisterRequest
 {

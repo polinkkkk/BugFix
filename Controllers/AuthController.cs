@@ -1,4 +1,4 @@
-using BugFix.Api.Schemas.Auth;
+using BugFix.Api.Views.Auth;
 using BugFix.Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -13,10 +13,12 @@ namespace BugFix.Api.Controllers;
 public sealed class AuthController : ControllerBase
 {
     private readonly UserManager<AppUser> _userManager;
+    private readonly SignInManager<AppUser> _signInManager;
 
-    public AuthController(UserManager<AppUser> userManager)
+    public AuthController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
     {
         _userManager = userManager;
+        _signInManager = signInManager;
     }
 
     [AllowAnonymous]
@@ -29,7 +31,8 @@ public sealed class AuthController : ControllerBase
         {
             ModelState.AddModelError(
                 "timeZoneId",
-                "Необходимо указать существующий часовой пояс, например Asia/Tomsk.");
+                "Необходимо указать существующий часовой пояс, например Asia/Tomsk."
+                );
 
             return ValidationProblem(ModelState);
         }
@@ -56,7 +59,8 @@ public sealed class AuthController : ControllerBase
         {
             return Problem(
                 statusCode: StatusCodes.Status409Conflict,
-                title: "Имя пользователя или email уже заняты.");
+                title: "Имя пользователя или email уже заняты."
+                );
         }
 
         if (result.Errors.Any(error =>
@@ -64,7 +68,8 @@ public sealed class AuthController : ControllerBase
         {
             return Problem(
                 statusCode: StatusCodes.Status409Conflict,
-                title: "Имя пользователя или email уже заняты.");
+                title: "Имя пользователя или email уже заняты."
+                );
         }
 
         if (!result.Succeeded)
@@ -94,5 +99,65 @@ public sealed class AuthController : ControllerBase
         };
 
         return StatusCode(StatusCodes.Status201Created, response);
+    }
+
+    [AllowAnonymous]
+    [HttpPost("login")]
+    [Consumes("application/json")]
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
+    {
+        var user = await _userManager.FindByEmailAsync(request.Email.Trim());
+
+        if (user is null)
+        {
+            return Problem(
+                statusCode: StatusCodes.Status401Unauthorized,
+                title: "Не удалось войти. Проверьте email и пароль."
+                );
+        }
+
+        var result = await _signInManager.PasswordSignInAsync(
+            user,
+            request.Password,
+            isPersistent: false,
+            lockoutOnFailure: true
+            );
+
+        if (!result.Succeeded)
+        {
+            return Problem(
+                statusCode: StatusCodes.Status401Unauthorized,
+                title: "Не удалось войти. Проверьте данные или повторите попытку позже."
+                );
+        }
+
+        return Ok(new
+        {
+            user.Id,
+            user.UserName,
+            user.Email,
+            user.TimeZoneId
+        });
+    }
+
+    [Authorize]
+    [HttpGet("me")]
+    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+    public async Task<IActionResult> GetCurrentUser()
+    {
+        var user = await _userManager.GetUserAsync(User);
+
+        if (user is null)
+        {
+            return Unauthorized();
+        }
+
+        return Ok(new
+        {
+            user.Id,
+            user.UserName,
+            user.Email,
+            user.TimeZoneId
+        });
     }
 }
