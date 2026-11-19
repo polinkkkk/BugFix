@@ -1,0 +1,141 @@
+// BugFix.Api/Services/Auth/AuthService.cs
+using System.Security.Claims;
+using BugFix.Api.Models;
+using BugFix.Api.Views.Auth.Dtos;
+using BugFix.Api.Views.Auth;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Npgsql;
+
+namespace BugFix.Api.Services;
+
+public sealed class AuthService
+{
+    private readonly UserManager<AppUser> _userManager;
+    private readonly SignInManager<AppUser> _signInManager;
+
+    public AuthService(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+    {
+        _userManager = userManager;
+        _signInManager = signInManager;
+    }
+
+    public async Task<RegisterResult> RegisterAsync(RegisterRequest request)
+    {
+        var timeZoneId = request.TimeZoneId.Trim();
+
+        if (!TimeZoneInfo.TryFindSystemTimeZoneById(timeZoneId, out _))
+        {
+            return new RegisterResult
+            {
+                FieldErrors = new Dictionary<string, List<string>>
+                {
+                    ["timeZoneId"] = new()
+                    {
+                        "Необходимо указать существующий часовой пояс, например Asia/Tomsk."
+                    }
+                }
+            };
+        }
+
+        var user = new AppUser
+        {
+            UserName = request.UserName.Trim(),
+            Email = request.Email.Trim(),
+            TimeZoneId = timeZoneId
+        };
+
+        IdentityResult result;
+
+        try
+        {
+            result = await _userManager.CreateAsync(user, request.Password);
+        }
+        catch (DbUpdateException exception) when (
+            exception.InnerException is PostgresException
+            {
+                SqlState: PostgresErrorCodes.UniqueViolation,
+                ConstraintName: "EmailIndex" or "UserNameIndex"
+            })
+        {
+            return new RegisterResult { IsConflict = true };
+        }
+
+        if (result.Errors.Any(error => error.Code is "DuplicateUserName" or "DuplicateEmail"))
+        {
+            return new RegisterResult { IsConflict = true };
+        }
+
+        if (!result.Succeeded)
+        {
+            var fieldErrors = new Dictionary<string, List<string>>();
+
+            foreach (var error in result.Errors)
+            {
+                var field = error.Code switch
+                {
+                    "InvalidUserName" => "userName",
+                    "InvalidEmail" => "email",
+                    _ when error.Code.StartsWith("Password", StringComparison.Ordinal) => "password",
+                    _ => "registration"
+                };
+
+                if (!fieldErrors.TryGetValue(field, out var list))
+                {
+                    list = new List<string>();
+                    fieldErrors[field] = list;
+                }
+
+                list.Add(error.Description);
+            }
+
+            return new RegisterResult { FieldErrors = fieldErrors };
+        }
+
+        return new RegisterResult
+        {
+            Succeeded = true,
+            User = ToDto(user)
+        };
+    }
+
+    public async Task<LoginResult> LoginAsync(LoginRequest request)
+    {
+        var user = await _userManager.FindByEmailAsync(request.Email.Trim());
+
+        if (user is null)
+        {
+            return new LoginResult { UserNotFound = true };
+        }
+
+        var result = await _signInManager.PasswordSignInAsync(
+            user,
+            request.Password,
+            isPersistent: false,
+            lockoutOnFailure: true
+            );
+
+        if (!result.Succeeded)
+        {
+            return new LoginResult();
+        }
+
+        return new LoginResult
+        {
+            Succeeded = true,
+            User = ToDto(user)
+        };
+    }
+
+    public async Task<UserDto?> GetCurrentUserAsync(ClaimsPrincipal principal)
+    {
+        var user = await _userManager.GetUserAsync(principal);
+        return user is null ? null : ToDto(user);
+    }
+
+    private static UserDto ToDto(AppUser user) => new(
+        user.Id,
+        user.UserName!,
+        user.Email!,
+        user.TimeZoneId);
+}

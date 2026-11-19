@@ -1,10 +1,8 @@
+using BugFix.Api.Services.Auth;
+using BugFix.Api.Views.Auth.Dtos;
 using BugFix.Api.Views.Auth;
-using BugFix.Api.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Npgsql;
 
 namespace BugFix.Api.Controllers;
 
@@ -12,93 +10,40 @@ namespace BugFix.Api.Controllers;
 [Route("api/auth")]
 public sealed class AuthController : ControllerBase
 {
-    private readonly UserManager<AppUser> _userManager;
-    private readonly SignInManager<AppUser> _signInManager;
+    private readonly AuthService _authService;
 
-    public AuthController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+    public AuthController(AuthService authService)
     {
-        _userManager = userManager;
-        _signInManager = signInManager;
+        _authService = authService;
     }
 
     [AllowAnonymous]
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterRequest request)
     {
-        var timeZoneId = request.TimeZoneId.Trim();
+        var result = await _authService.RegisterAsync(request);
 
-        if (!TimeZoneInfo.TryFindSystemTimeZoneById(timeZoneId, out _))
-        {
-            ModelState.AddModelError(
-                "timeZoneId",
-                "Необходимо указать существующий часовой пояс, например Asia/Tomsk."
-                );
-
-            return ValidationProblem(ModelState);
-        }
-
-        var user = new AppUser
-        {
-            UserName = request.UserName.Trim(),
-            Email = request.Email.Trim(),
-            TimeZoneId = timeZoneId
-        };
-
-        IdentityResult result;
-
-        try
-        {
-            result = await _userManager.CreateAsync(user, request.Password);
-        }
-        catch (DbUpdateException exception) when (
-            exception.InnerException is PostgresException
-            {
-                SqlState: PostgresErrorCodes.UniqueViolation,
-                ConstraintName: "EmailIndex" or "UserNameIndex"
-            })
+        if (result.IsConflict)
         {
             return Problem(
                 statusCode: StatusCodes.Status409Conflict,
-                title: "Имя пользователя или email уже заняты."
-                );
+                title: "Имя пользователя или email уже заняты.");
         }
 
-        if (result.Errors.Any(error =>
-            error.Code is "DuplicateUserName" or "DuplicateEmail"))
+        if (result.FieldErrors.Count > 0)
         {
-            return Problem(
-                statusCode: StatusCodes.Status409Conflict,
-                title: "Имя пользователя или email уже заняты."
-                );
-        }
-
-        if (!result.Succeeded)
-        {
-            foreach (var error in result.Errors)
+            foreach (var (field, errors) in result.FieldErrors)
             {
-                var field = error.Code switch
+                foreach (var error in errors)
                 {
-                    "InvalidUserName" => "userName",
-                    "InvalidEmail" => "email",
-                    _ when error.Code.StartsWith("Password", StringComparison.Ordinal) => "password",
-                    _ => "registration"
-                };
-
-                ModelState.AddModelError(field, error.Description);
+                    ModelState.AddModelError(field, error);
+                }
             }
 
             return ValidationProblem(ModelState);
         }
 
-        var response = new 
-        {
-            user.Id,
-            user.UserName,
-            user.Email,
-            user.TimeZoneId
-        };
-
-        return StatusCode(StatusCodes.Status201Created, response);
+        return StatusCode(StatusCodes.Status201Created, result.User);
     }
 
     [AllowAnonymous]
@@ -106,38 +51,23 @@ public sealed class AuthController : ControllerBase
     [Consumes("application/json")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        var user = await _userManager.FindByEmailAsync(request.Email.Trim());
+        var result = await _authService.LoginAsync(request);
 
-        if (user is null)
+        if (result.UserNotFound)
         {
             return Problem(
                 statusCode: StatusCodes.Status401Unauthorized,
-                title: "Не удалось войти. Проверьте email и пароль."
-                );
+                title: "Не удалось войти. Проверьте email и пароль.");
         }
-
-        var result = await _signInManager.PasswordSignInAsync(
-            user,
-            request.Password,
-            isPersistent: false,
-            lockoutOnFailure: true
-            );
 
         if (!result.Succeeded)
         {
             return Problem(
                 statusCode: StatusCodes.Status401Unauthorized,
-                title: "Не удалось войти. Проверьте данные или повторите попытку позже."
-                );
+                title: "Не удалось войти. Проверьте данные или повторите попытку позже.");
         }
 
-        return Ok(new
-        {
-            user.Id,
-            user.UserName,
-            user.Email,
-            user.TimeZoneId
-        });
+        return Ok(result.User);
     }
 
     [Authorize]
@@ -145,19 +75,13 @@ public sealed class AuthController : ControllerBase
     [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
     public async Task<IActionResult> GetCurrentUser()
     {
-        var user = await _userManager.GetUserAsync(User);
+        var user = await _authService.GetCurrentUserAsync(User);
 
         if (user is null)
         {
             return Unauthorized();
         }
 
-        return Ok(new
-        {
-            user.Id,
-            user.UserName,
-            user.Email,
-            user.TimeZoneId
-        });
+        return Ok(user);
     }
 }

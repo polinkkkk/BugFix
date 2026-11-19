@@ -1,5 +1,6 @@
 using BugFix.Api.Data;
 using BugFix.Api.Models;
+using BugFix.Api.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("BugFix");
 
 builder.Services.AddDbContext<ContextDB>(options => options.UseNpgsql(connectionString));
+
+builder.Services.AddScoped<AuthService>();
 
 builder.Services
     .AddIdentity<AppUser, IdentityRole<Guid>>(options =>
