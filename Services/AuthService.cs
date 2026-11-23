@@ -1,4 +1,3 @@
-// BugFix.Api/Services/Auth/AuthService.cs
 using System.Security.Claims;
 using BugFix.Api.Models;
 using BugFix.Api.Views.Auth.Dtos;

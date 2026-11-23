@@ -18,7 +18,7 @@ public sealed class AuthController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost("register")]
-    public async Task<IActionResult> Register(RegisterRequest request)
+    public async Task<ActionResult> Register(RegisterRequest request)
     {
         var result = await _authService.RegisterAsync(request);
 
@@ -48,7 +48,7 @@ public sealed class AuthController : ControllerBase
     [AllowAnonymous]
     [HttpPost("login")]
     [Consumes("application/json")]
-    public async Task<IActionResult> Login([FromBody] LoginRequest request)
+    public async Task<ActionResult> Login([FromBody] LoginRequest request)
     {
         var result = await _authService.LoginAsync(request);
 
@@ -72,7 +72,7 @@ public sealed class AuthController : ControllerBase
     [Authorize]
     [HttpGet("me")]
     [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
-    public async Task<IActionResult> GetCurrentUser()
+    public async Task<ActionResult> GetCurrentUser()
     {
         var user = await _authService.GetCurrentUserAsync(User);
 
