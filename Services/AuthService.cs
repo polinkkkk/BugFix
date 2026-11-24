@@ -5,6 +5,10 @@ using BugFix.Api.Views.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using System.Text;
+using BugFix.Api.Options;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Options;
 
 namespace BugFix.Api.Services;
 
@@ -12,11 +16,20 @@ public sealed class AuthService : IAuthService
 {
     private readonly UserManager<AppUser> _userManager;
     private readonly SignInManager<AppUser> _signInManager;
+    private readonly IPasswordResetEmailSender _passwordResetEmailSender;
+    private readonly PasswordResetOptions _passwordResetOptions;
 
-    public AuthService(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+    public AuthService(
+        UserManager<AppUser> userManager,
+        SignInManager<AppUser> signInManager,
+        IPasswordResetEmailSender passwordResetEmailSender,
+        IOptions<PasswordResetOptions> passwordResetOptions
+    )
     {
         _userManager = userManager;
         _signInManager = signInManager;
+        _passwordResetEmailSender = passwordResetEmailSender;
+        _passwordResetOptions = passwordResetOptions.Value;
     }
 
     public async Task<RegisterResult> RegisterAsync(RegisterRequest request)
@@ -141,5 +154,27 @@ public sealed class AuthService : IAuthService
         user.Id,
         user.UserName!,
         user.Email!,
-        user.TimeZoneId);
+        user.TimeZoneId
+    );
+
+    public async Task RequestPasswordResetAsync(ForgotPasswordRequest request)
+    {
+        var user = await _userManager.FindByEmailAsync(request.Email.Trim());
+
+        if (user is null) { return; }
+
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+        var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+
+        var resetLink = QueryHelpers.AddQueryString(
+            _passwordResetOptions.ResetPageUrl,
+            new Dictionary<string, string?>
+            {
+                ["userId"] = user.Id.ToString(),
+                ["token"] = encodedToken
+            });
+
+        await _passwordResetEmailSender.SendAsync(user.Email!, resetLink);
+    }
 }

@@ -10,4 +10,5 @@ public interface IAuthService
     Task<LoginResult> LoginAsync(LoginRequest request);
     Task<UserDto?> GetCurrentUserAsync(ClaimsPrincipal principal);
     Task LogoutAsync();
+    Task RequestPasswordResetAsync(ForgotPasswordRequest request);
 }

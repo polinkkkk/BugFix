@@ -3,6 +3,7 @@ using BugFix.Api.Models;
 using BugFix.Api.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using BugFix.Api.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,10 @@ var connectionString = builder.Configuration.GetConnectionString("BugFix");
 builder.Services.AddDbContext<ContextDB>(options => options.UseNpgsql(connectionString));
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+
+builder.Services.Configure<PasswordResetOptions>(builder.Configuration.GetSection("PasswordReset"));
+
+builder.Services.AddScoped<IPasswordResetEmailSender, SmtpPasswordResetEmailSender>();
 
 builder.Services
     .AddIdentity<AppUser, IdentityRole<Guid>>(options =>

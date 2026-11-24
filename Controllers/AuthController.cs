@@ -1,5 +1,6 @@
 using BugFix.Api.Services;
 using BugFix.Api.Views.Auth;
+using BugFix.Api.Views.Auth.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -90,5 +91,18 @@ public sealed class AuthController : ControllerBase
     {
         await _authService.LogoutAsync();
         return NoContent();
+    }
+
+    [AllowAnonymous]
+    [HttpPost("forgot-password")]
+    [Consumes("application/json")]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+    {
+        await _authService.RequestPasswordResetAsync(request);
+
+        return Ok(new
+        {
+            message = "Письмо со ссылкой отправлено на email."
+        });
     }
 }
