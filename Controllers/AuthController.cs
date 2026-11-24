@@ -105,4 +105,38 @@ public sealed class AuthController : ControllerBase
             message = "Письмо со ссылкой отправлено на email."
         });
     }
+
+    [AllowAnonymous]
+    [HttpPost("reset-password")]
+    [Consumes("application/json")]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+    {
+        var result = await _authService.ResetPasswordAsync(request);
+
+        if (!result.Succeeded)
+        {
+            foreach (var error in result.Errors)
+            {
+                var field = error.Code switch
+                {
+                    "InvalidToken" => "token",
+                    _ when error.Code.StartsWith("Password", StringComparison.Ordinal) => "newPassword",
+                    _ => "reset"
+                };
+
+                var message = error.Code == "InvalidToken"
+                    ? "Ссылка недействительна или срок её действия истёк. Запросите новую."
+                    : error.Description;
+
+                ModelState.AddModelError(field, message);
+            }
+
+            return ValidationProblem(ModelState);
+        }
+
+        return Ok(new
+        {
+            message = "Пароль изменён. Войдите с новым паролем."
+        });
+    }
 }

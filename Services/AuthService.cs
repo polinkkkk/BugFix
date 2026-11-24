@@ -177,4 +177,27 @@ public sealed class AuthService : IAuthService
 
         await _passwordResetEmailSender.SendAsync(user.Email!, resetLink);
     }
+
+    public async Task<IdentityResult> ResetPasswordAsync(ResetPasswordRequest request)
+    {
+        string token;
+
+        try
+        {
+            token = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(request.Token));
+        }
+        catch (FormatException)
+        {
+            return IdentityResult.Failed(_userManager.ErrorDescriber.InvalidToken());
+        }
+
+        var user = await _userManager.FindByIdAsync(request.UserId.ToString());
+
+        if (user is null)
+        {
+            return IdentityResult.Failed(_userManager.ErrorDescriber.InvalidToken());
+        }
+
+        return await _userManager.ResetPasswordAsync(user, token, request.NewPassword);
+    }
 }

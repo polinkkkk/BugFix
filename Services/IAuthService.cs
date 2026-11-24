@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using BugFix.Api.Views.Auth;
 using BugFix.Api.Views.Auth.Dtos;
+using Microsoft.AspNetCore.Identity;
 
 namespace BugFix.Api.Services;
 
@@ -11,4 +12,5 @@ public interface IAuthService
     Task<UserDto?> GetCurrentUserAsync(ClaimsPrincipal principal);
     Task LogoutAsync();
     Task RequestPasswordResetAsync(ForgotPasswordRequest request);
+    Task<IdentityResult> ResetPasswordAsync(ResetPasswordRequest request);
 }
