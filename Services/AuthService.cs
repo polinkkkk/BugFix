@@ -8,7 +8,7 @@ using Npgsql;
 
 namespace BugFix.Api.Services;
 
-public sealed class AuthService
+public sealed class AuthService : IAuthService
 {
     private readonly UserManager<AppUser> _userManager;
     private readonly SignInManager<AppUser> _signInManager;
@@ -130,6 +130,11 @@ public sealed class AuthService
     {
         var user = await _userManager.GetUserAsync(principal);
         return user is null ? null : ToDto(user);
+    }
+
+    public async Task LogoutAsync()
+    {
+        await _signInManager.SignOutAsync();
     }
 
     private static UserDto ToDto(AppUser user) => new(
