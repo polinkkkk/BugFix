@@ -103,7 +103,7 @@ a:hover {
     color: #107873;
 }
 
-.login-button {
+button {
     display: block;
     width: 100%;
     max-width: 725px;
@@ -117,11 +117,11 @@ a:hover {
     font: inherit;
 }
 
-.login-button:hover {
+button:hover {
     background-color: #0c625e;
 }
 
-.login-button:focus-visible,
+button:focus-visible,
 a:focus-visible {
     outline: 2px solid #107873;
     outline-offset: 4px;
