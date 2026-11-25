@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="../css/signup.css">
+    <script src="../js/signup.js" defer></script>
 </head>
 <body>
     <main class="registration">
@@ -23,35 +24,48 @@
         <h1>Создать аккаунт</h1>
         <p class="description">Введите данные, чтобы зарегистрироваться</p>
 
-        <form class="form" method="post">
+        <form class="form" method="post" novalidate>
+            <div class="notice" id="form-message" hidden>
+                <span id="form-message-text"></span>
+            </div>
+
             <div class="field">
                 <label for="name">Имя</label>
                 <input type="text" id="name" placeholder="Введите ваше имя" required>
+                <p class="field-message" id="name-error"></p>
             </div>
 
             <div class="field">
                 <label for="email">Электронная почта</label>
                 <input type="email" id="email" placeholder="name@example.com" required>
+                <p class="field-message" id="email-error"></p>
             </div>
 
             <div class="field">
                 <label for="password">Пароль</label>
-                <input type="password" id="password" placeholder="Введите пароль" required>
+                <input type="password" id="password" placeholder="Введите пароль" minlength="8" required>
+                <p class="field-message" id="password-error">Не менее 8 символов.</p>
             </div>
 
             <div class="field">
                 <label for="confirm-password">Подтвердите пароль</label>
                 <input type="password" id="confirm-password" placeholder="Введите пароль еще раз" required>
+                <p class="field-message" id="confirm-password-error"></p>
             </div>
 
-            <label class="agreement">
-                <input type="checkbox" required>
-                <span>Я принимаю <strong>условия использования</strong></span>
-            </label>
+            <div class="agreement-group">
+                <label class="agreement">
+                    <input type="checkbox" id="agreement" required>
+                    <span>Я принимаю <strong>условия использования</strong></span>
+                </label>
+                <p class="agreement-error" id="agreement-error"></p>
+            </div>
 
-            <button type="submit">Зарегистрироваться</button>
+            <button type="submit" id="submit-button">
+                <span class="spinner" id="submit-spinner" hidden></span>
+                <span id="submit-text">Зарегистрироваться</span>
+            </button>
         </form>
-
         <p class="login">
             Уже есть аккаунт? <a href="login.html">Войти</a>
         </p>

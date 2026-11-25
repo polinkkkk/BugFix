@@ -85,6 +85,11 @@ h1 {
     outline-offset: 2px;
 }
 
+.field input.error,
+.agreement input.error {
+    border-color: #fda29b;
+}
+
 .agreement {
     display: flex;
     align-items: center;
@@ -123,6 +128,71 @@ h1 {
     font-weight: 700;
 }
 
+.notice {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 52px;
+    margin-bottom: 24px;
+    padding: 14px 16px;
+    border: 1px solid #fda29b;
+    border-radius: 8px;
+    background: #fef3f2;
+    color: #b42318;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 22px;
+}
+
+.notice::before,
+.field-message.error::before {
+    content: "!";
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border: 1.8px solid currentColor;
+    border-radius: 50%;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.notice::before {
+    width: 18px;
+    height: 18px;
+    font-size: 12px;
+}
+
+.field-message {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 20px;
+    margin: 8px 0 0;
+    color: #5c7774;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.field-message.error {
+    color: #b42318;
+}
+
+.field-message.error::before {
+    width: 14px;
+    height: 14px;
+    font-size: 10px;
+}
+
+.field input.error,
+.agreement input.error {
+    border-color: #fda29b;
+}
+
+.field input.error:focus {
+    outline: none;
+}
+
 button {
     display: block;
     width: 100%;
@@ -152,3 +222,66 @@ button:hover {
     text-underline-offset: 3px;
 }
 
+.agreement-error {
+    min-height: 20px;
+    margin: 8px 0 0;
+    color: #b42318;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.notice[data-state="loading"] {
+    border-color: #dce5e2;
+    background: #e5f3f0;
+    color: #18302e;
+}
+
+.notice[data-state="loading"]::before {
+    color: #0f766e;
+}
+
+/* Поля без заранее зарезервированного места под ошибки */
+.field {
+    min-height: 0;
+    margin-bottom: 24px;
+}
+
+/* Расстояние после первого поля, как в твоём исходном CSS */
+.notice + .field {
+    margin-bottom: 16px;
+}
+
+/* Сообщение занимает место только при наличии текста */
+.field-message {
+    min-height: 0;
+    margin: 8px 0 0;
+}
+
+.field-message:empty {
+    display: none;
+    margin: 0;
+}
+
+/* Убираем лишнее место возле согласия */
+.agreement-group {
+    margin: 0 0 20px;
+}
+
+.agreement {
+    margin-bottom: 0;
+}
+
+.agreement-error {
+    min-height: 0;
+    margin: 8px 0 0;
+}
+
+.agreement-error:empty {
+    display: none;
+    margin: 0;
+}
+
+/* Верхний блок не занимает места, пока он скрыт */
+.notice[hidden] {
+    display: none !important;
+}
