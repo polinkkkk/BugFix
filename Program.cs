@@ -11,6 +11,7 @@ var connectionString = builder.Configuration.GetConnectionString("BugFix");
 builder.Services.AddDbContext<ContextDB>(options => options.UseNpgsql(connectionString));
 
 builder.Services.AddScoped<IProjectService, ProjectService>();
+builder.Services.AddScoped<IProjectMemberService, ProjectMemberService>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 

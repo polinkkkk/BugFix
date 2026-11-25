@@ -27,7 +27,8 @@ public sealed class AuthController : ControllerBase
         {
             return Problem(
                 statusCode: StatusCodes.Status409Conflict,
-                title: "Имя пользователя или email уже заняты.");
+                title: "Имя пользователя или email уже заняты."
+            );
         }
 
         if (result.FieldErrors.Count > 0)
@@ -57,14 +58,16 @@ public sealed class AuthController : ControllerBase
         {
             return Problem(
                 statusCode: StatusCodes.Status401Unauthorized,
-                title: "Не удалось войти. Проверьте email и пароль.");
+                title: "Не удалось войти. Проверьте email и пароль."
+            );
         }
 
         if (!result.Succeeded)
         {
             return Problem(
                 statusCode: StatusCodes.Status401Unauthorized,
-                title: "Не удалось войти. Проверьте данные или повторите попытку позже.");
+                title: "Не удалось войти. Проверьте данные или повторите попытку позже."
+            );
         }
 
         return Ok(result.User);
