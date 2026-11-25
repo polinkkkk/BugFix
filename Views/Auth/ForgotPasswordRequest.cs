@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace BugFix.Api.Views.Auth.Dtos;
+namespace BugFix.Api.Views.Auth;
 
 public sealed class ForgotPasswordRequest
 {

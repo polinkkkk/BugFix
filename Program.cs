@@ -8,17 +8,16 @@ using BugFix.Api.Options;
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("BugFix");
-
 builder.Services.AddDbContext<ContextDB>(options => options.UseNpgsql(connectionString));
+
+builder.Services.AddScoped<IProjectService, ProjectService>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.Configure<PasswordResetOptions>(builder.Configuration.GetSection("PasswordReset"));
-
 builder.Services.AddScoped<IPasswordResetEmailSender, SmtpPasswordResetEmailSender>();
 
-builder.Services
-    .AddIdentity<AppUser, IdentityRole<Guid>>(options =>
+builder.Services.AddIdentity<AppUser, IdentityRole<Guid>>(options =>
     {
         options.User.RequireUniqueEmail = true;
     })
@@ -46,9 +45,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 builder.Services.AddControllers();
-
 builder.Services.AddOpenApi();
-
 builder.WebHost.UseUrls("http://127.0.0.1:5080");
 
 var app = builder.Build();
@@ -60,7 +57,5 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

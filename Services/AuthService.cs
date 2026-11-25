@@ -154,7 +154,8 @@ public sealed class AuthService : IAuthService
         user.Id,
         user.UserName!,
         user.Email!,
-        user.TimeZoneId
+        user.TimeZoneId,
+        user.IsTeacher
     );
 
     public async Task RequestPasswordResetAsync(ForgotPasswordRequest request)

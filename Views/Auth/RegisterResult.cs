@@ -1,4 +1,6 @@
-namespace BugFix.Api.Views.Auth.Dtos;
+using BugFix.Api.Views.Auth.Dtos;
+
+namespace BugFix.Api.Views.Auth;
 
 public sealed class RegisterResult
 {
