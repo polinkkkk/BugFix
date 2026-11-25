@@ -152,32 +152,3 @@ button:hover {
     text-underline-offset: 3px;
 }
 
-@media (max-width: 900px) {
-    body {
-        padding: 24px;
-    }
-
-    .registration {
-        min-height: auto;
-        padding: 32px 24px;
-    }
-
-    h1 {
-        font-size: 36px;
-        letter-spacing: -1px;
-    }
-}
-
-@media (max-width: 480px) {
-    body {
-        padding: 16px;
-    }
-
-    .registration {
-        padding: 24px 16px;
-    }
-
-    h1 {
-        font-size: 30px;
-    }
-}
