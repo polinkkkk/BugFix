@@ -13,8 +13,7 @@ const submitButton = document.getElementById("submit-button");
 const submitText = document.getElementById("submit-text");
 const submitSpinner = document.getElementById("submit-spinner");
 
-// Учебный адрес для проверки ошибки занятой почты.
-// В дальнейшем эту проверку должен выполнять сервер.
+
 const registeredEmails = ["postavte5@example.com"];
 
 let isSubmitting = false;

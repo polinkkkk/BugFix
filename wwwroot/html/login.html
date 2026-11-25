@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <link rel="stylesheet" href="../css/login.css">
+  <script src="../js/login.js" defer></script>
 </head>
 
 <body>
@@ -24,21 +25,42 @@
         <h1 class="title">Войти в аккаунт</h1>
         <p class="description">Введите данные, чтобы авторизоваться</p>
 
-        <form class="login-form" method="post">
+        <form class="login-form" method="post" novalidate>
+            <div class="notice" id="form-message" hidden>
+                <div>
+                    <span id="form-message-text"></span>
+                    <p id="form-message-description" hidden></p>
+                </div>
+            </div>
 
             <div class="form-field">
                 <label for="email">Электронная почта</label>
-                <input type="email" id="email" placeholder="name@example.com" required>
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="name@example.com"
+                    required
+                >
+                <p class="field-message" id="email-error"></p>
             </div>
 
             <div class="form-field">
                 <label for="password">Пароль</label>
-                <input type="password" id="password" placeholder="Введите пароль" required>
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Введите пароль"
+                    required
+                >
+                <p class="field-message" id="password-error"></p>
             </div>
 
             <a class="forgot" href="forgot-password.html">Забыли пароль?</a>
-            <button type="submit"> Войти </button>
 
+            <button type="submit" id="submit-button">
+                <span class="spinner" id="submit-spinner" hidden></span>
+                <span id="submit-text">Войти</span>
+            </button>
         </form>
 
         <p class="footer"> 

@@ -240,18 +240,15 @@ button:hover {
     color: #0f766e;
 }
 
-/* Поля без заранее зарезервированного места под ошибки */
 .field {
     min-height: 0;
     margin-bottom: 24px;
 }
 
-/* Расстояние после первого поля, как в твоём исходном CSS */
 .notice + .field {
     margin-bottom: 16px;
 }
 
-/* Сообщение занимает место только при наличии текста */
 .field-message {
     min-height: 0;
     margin: 8px 0 0;
@@ -262,7 +259,6 @@ button:hover {
     margin: 0;
 }
 
-/* Убираем лишнее место возле согласия */
 .agreement-group {
     margin: 0 0 20px;
 }
@@ -281,7 +277,6 @@ button:hover {
     margin: 0;
 }
 
-/* Верхний блок не занимает места, пока он скрыт */
 .notice[hidden] {
     display: none !important;
 }
