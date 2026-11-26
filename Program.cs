@@ -56,6 +56,9 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+app.UseStaticFiles();
+app.MapGet("/", () => Results.Redirect("/html/login.html"));
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
