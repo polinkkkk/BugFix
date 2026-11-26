@@ -255,3 +255,13 @@ a:focus-visible {
         transform: rotate(360deg);
     }
 }
+
+.notice[data-state="success"] {
+    color: #0f615b;
+    background: #e4f3ef;
+    border-color: #b5d9ce;
+}
+
+.notice[data-state="success"]::before {
+    content: "✓";
+}

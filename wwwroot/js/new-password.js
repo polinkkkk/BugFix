@@ -57,7 +57,7 @@ function showLoading() {
     submitText.textContent = "Сохраняем...";
 }
 
-form.addEventListener("submit", (event) => {
+form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     if (isSubmitting) {
@@ -95,5 +95,42 @@ form.addEventListener("submit", (event) => {
         return;
     }
 
+    const query = new URLSearchParams(location.search);
+
+    const userId = query.get("userId");
+    const token = query.get("token");
+
+    if (!userId || !token) {
+        showMessage(
+            "Ссылка недействительна. Запросите новое письмо восстановления.",
+            "error"
+        );
+
+        return;
+    }
+
     showLoading();
+
+    try {
+        await postJson("/api/auth/reset-password", {
+            userId: userId,
+            token: token,
+            newPassword: password
+        });
+
+        sessionStorage.removeItem("bugfix.resetEmail");
+
+        location.replace("password-changed.html");
+    } catch (error) {
+        showMessage(error.message, "error");
+    } finally {
+        isSubmitting = false;
+
+        passwordInput.disabled = false;
+        confirmPasswordInput.disabled = false;
+
+        submitButton.disabled = false;
+        submitSpinner.hidden = true;
+        submitText.textContent = "Сохранить пароль";
+    }
 });

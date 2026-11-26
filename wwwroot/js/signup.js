@@ -13,9 +13,6 @@ const submitButton = document.getElementById("submit-button");
 const submitText = document.getElementById("submit-text");
 const submitSpinner = document.getElementById("submit-spinner");
 
-
-const registeredEmails = ["postavte5@example.com"];
-
 let isSubmitting = false;
 
 function showMessage(text, state) {
@@ -64,7 +61,7 @@ function showLoading() {
     submitText.textContent = "Создаём аккаунт...";
 }
 
-form.addEventListener("submit", (event) => {
+form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     if (isSubmitting) {
@@ -137,20 +134,28 @@ form.addEventListener("submit", (event) => {
         return;
     }
 
-    if (registeredEmails.includes(email.toLowerCase())) {
-        showMessage(
-            "Аккаунт с такой почтой уже существует",
-            "error"
-        );
-
-        showFieldError(
-            emailInput,
-            "Эта почта уже используется. Войдите или восстановите пароль."
-        );
-
-        emailInput.focus();
-        return;
-    }
-
     showLoading();
+
+    try {
+        await postJson("/api/auth/register", {
+            userName: name,
+            email: email,
+            password: password,
+            timeZoneId: Intl.DateTimeFormat().resolvedOptions().timeZone
+        });
+
+        location.assign("login.html");
+    } catch (error) {
+        showMessage(error.message, "error");
+    } finally {
+        isSubmitting = false;
+
+        form.querySelectorAll("input").forEach((input) => {
+            input.disabled = false;
+        });
+
+        submitButton.disabled = false;
+        submitSpinner.hidden = true;
+        submitText.textContent = "Зарегистрироваться";
+    }
 });

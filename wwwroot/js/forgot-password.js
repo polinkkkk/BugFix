@@ -44,7 +44,7 @@ function showLoading() {
     submitText.textContent = "Отправляем...";
 }
 
-form.addEventListener("submit", (event) => {
+form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     if (isSubmitting) {
@@ -60,13 +60,31 @@ form.addEventListener("submit", (event) => {
         return;
     }
 
-    if (
-        emailInput.validity.typeMismatch ||
-        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-    ) {
+    if (emailInput.validity.typeMismatch || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+    {
         showEmailError("Введите email в формате name@example.com.");
         return;
     }
 
     showLoading();
+
+    try {
+        await postJson("/api/auth/forgot-password", {
+            email: email
+        });
+
+        sessionStorage.setItem("bugfix.resetEmail", email);
+
+        location.assign("check-mail.html");
+    } catch (error) {
+        showMessage(error.message, "error");
+    } finally {
+        isSubmitting = false;
+
+        emailInput.disabled = false;
+        submitButton.disabled = false;
+
+        submitSpinner.hidden = true;
+        submitText.textContent = "Отправить ссылку";
+    }
 });

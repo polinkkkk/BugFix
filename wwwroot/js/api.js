@@ -1,52 +1,35 @@
-export class ApiError extends Error {
-    constructor(message, status = 0, errors = {}) {
-        super(message);
-        this.status = status;
-        this.errors = errors;
-    }
-}
-
-export async function postJson(path, body) {
+async function postJson(url, body) {
     let response;
 
     try {
-        response = await fetch(path, {
+        response = await fetch(`http://127.0.0.1:5080${url}`, {
             method: "POST",
-            credentials: "same-origin",
+            credentials: "include",
             headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
+                "Content-Type": "application/json"
             },
             body: JSON.stringify(body)
         });
     } catch {
-        throw new ApiError(
-            "Не удалось связаться с сервером. Проверьте подключение и повторите попытку."
+        throw new Error(
+            "Не удалось связаться с сервером. Повторите попытку."
         );
     }
 
-    let data = null;
+    const data = await response.json().catch(() => null);
 
-    try {
-        const text = await response.text();
-        data = text ? JSON.parse(text) : null;
-    } catch {
-        throw new ApiError(
-            "Сервер вернул некорректный ответ. Повторите попытку позже.",
-            response.status
-        );
-    }
+    console.log("Адрес запроса:", response.url);
+    console.log("HTTP-статус:", response.status);
+    console.log("Ответ сервера:", data);
 
     if (!response.ok) {
+        const errors = Object.values(data?.errors || {}).flat().join(" ");
+
         const message = response.status >= 500
             ? "Ошибка сервера. Повторите попытку позже."
-            : data?.title || "Не удалось выполнить запрос.";
+            : errors || data?.title || "Не удалось выполнить запрос.";
 
-        throw new ApiError(
-            message,
-            response.status,
-            data?.errors || {}
-        );
+        throw new Error(message);
     }
 
     return data;

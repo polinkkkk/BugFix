@@ -30,8 +30,39 @@ function startCountdown() {
     timerId = setInterval(updateCountdown, 250);
 }
 
-resendButton.addEventListener("click", () => {
-    startCountdown();
+resendButton.addEventListener("click", async () => {
+    if (resendButton.disabled) {
+        return;
+    }
+
+    const message = document.getElementById("resend-message");
+
+    message.hidden = true;
+
+    resendButton.disabled = true;
+    resendButton.textContent = "Отправляем письмо...";
+
+    try {
+        const email = sessionStorage.getItem("bugfix.resetEmail");
+
+        if (!email) {
+            throw new Error(
+                "Сначала укажите почту на странице восстановления пароля."
+            );
+        }
+
+        await postJson("/api/auth/forgot-password", {
+            email
+        });
+
+        startCountdown();
+    } catch (error) {
+        message.textContent = error.message;
+        message.hidden = false;
+
+        resendButton.disabled = false;
+        resendButton.textContent = "Отправить письмо повторно";
+    }
 });
 
 startCountdown();

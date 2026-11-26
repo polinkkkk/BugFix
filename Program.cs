@@ -48,6 +48,17 @@ builder.Services.ConfigureApplicationCookie(options =>
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.WebHost.UseUrls("http://127.0.0.1:5080");
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Frontend", policy =>
+    {
+        policy
+            .WithOrigins("http://127.0.0.1:5500")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
 
 var app = builder.Build();
 
@@ -58,8 +69,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseStaticFiles();
 app.MapGet("/", () => Results.Redirect("/html/login.html"));
+app.UseRouting();
+app.UseCors("Frontend");
 
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
 app.Run();
