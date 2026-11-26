@@ -3,7 +3,7 @@ using BugFix.Api.Views.Auth;
 using BugFix.Api.Views.Auth.Dtos;
 using Microsoft.AspNetCore.Identity;
 
-namespace BugFix.Api.Services;
+namespace BugFix.Api.Services.Auth;
 
 public interface IAuthService
 {

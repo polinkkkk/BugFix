@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using BugFix.Api.Services;
+using BugFix.Api.Services.Projects;
 using BugFix.Api.Views.Projects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -56,5 +56,41 @@ public sealed class ProjectsController : ControllerBase
             StatusCodes.Status201Created,
             result.Project
         );
+    }
+
+    [HttpGet]
+    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+    public async Task<ActionResult> GetMyProjects()
+    {
+        if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
+        {
+            return Unauthorized();
+        }
+
+        var projects = await _projectService.GetMyProjectsAsync(userId);
+
+        return Ok(projects);
+    }
+
+    [HttpGet("{projectId:guid}")]
+    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+    public async Task<ActionResult> GetById(Guid projectId)
+    {
+        if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
+        {
+            return Unauthorized();
+        }
+
+        var project = await _projectService.GetProjectByIdAsync(projectId, userId);
+
+        if (project is null)
+        {
+            return Problem(
+                statusCode: StatusCodes.Status404NotFound,
+                title: "ПО не найдено."
+            );
+        }
+
+        return Ok(project);
     }
 }

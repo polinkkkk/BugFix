@@ -1,6 +1,8 @@
 using BugFix.Api.Data;
 using BugFix.Api.Models;
-using BugFix.Api.Services;
+using BugFix.Api.Services.Auth;
+using BugFix.Api.Services.Projects;
+using BugFix.Api.Services.PasswordReset;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using BugFix.Api.Options;

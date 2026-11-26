@@ -1,4 +1,4 @@
-namespace BugFix.Api.Services;
+namespace BugFix.Api.Services.PasswordReset;
 
 public interface IPasswordResetEmailSender
 {

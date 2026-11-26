@@ -3,7 +3,7 @@ using System.Text;
 using BugFix.Api.Options;
 using Microsoft.Extensions.Options;
 
-namespace BugFix.Api.Services;
+namespace BugFix.Api.Services.PasswordReset;
 
 public sealed class SmtpPasswordResetEmailSender : IPasswordResetEmailSender
 {

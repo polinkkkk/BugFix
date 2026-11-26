@@ -5,7 +5,7 @@ using BugFix.Api.Views.Projects.Dtos;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
-namespace BugFix.Api.Services;
+namespace BugFix.Api.Services.Projects;
 
 public sealed class ProjectService : IProjectService
 {
@@ -91,5 +91,45 @@ public sealed class ProjectService : IProjectService
                 project.RepositoryUrl
             )
         };
+    }
+
+    public async Task<List<ProjectListItemDto>> GetMyProjectsAsync(Guid userId)
+    {
+        return await _db.ProjectMembers
+            .AsNoTracking()
+            .Where(member => member.UserId == userId)
+            .OrderBy(member => member.Project.Name)
+            .ThenBy(member => member.ProjectId)
+            .Select(member => new ProjectListItemDto(
+                member.ProjectId,
+                member.Project.Name,
+                member.Project.RepositoryUrl,
+                EF.Property<string>(member, "Role")
+            ))
+            .ToListAsync();
+    }
+
+    public async Task<ProjectDetailsDto?> GetProjectByIdAsync(Guid projectId,Guid userId)
+    {
+        return await _db.ProjectMembers
+            .AsNoTracking()
+            .Where(member =>
+                member.ProjectId == projectId &&
+                member.UserId == userId)
+            .Select(member => new ProjectDetailsDto(
+                member.ProjectId,
+                member.Project.Name,
+                member.Project.RepositoryUrl,
+                EF.Property<string>(member, "Role"),
+                member.Project.Members
+                    .OrderBy(projectMember => projectMember.User.UserName)
+                    .ThenBy(projectMember => projectMember.Id)
+                    .Select(projectMember => new ProjectMemberDto(
+                        projectMember.Id,
+                        projectMember.UserId,
+                        projectMember.User.UserName!,
+                        EF.Property<string>(projectMember, "Role")))
+                    .ToList()))
+            .SingleOrDefaultAsync();
     }
 }

@@ -2,6 +2,7 @@ using System.Security.Claims;
 using BugFix.Api.Models;
 using BugFix.Api.Views.Auth.Dtos;
 using BugFix.Api.Views.Auth;
+using BugFix.Api.Services.PasswordReset;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
@@ -10,7 +11,7 @@ using BugFix.Api.Options;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 
-namespace BugFix.Api.Services;
+namespace BugFix.Api.Services.Auth;
 
 public sealed class AuthService : IAuthService
 {

@@ -1,6 +1,5 @@
-using BugFix.Api.Services;
+using BugFix.Api.Services.Auth;
 using BugFix.Api.Views.Auth;
-using BugFix.Api.Views.Auth.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

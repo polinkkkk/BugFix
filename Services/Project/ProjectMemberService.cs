@@ -5,7 +5,7 @@ using BugFix.Api.Views.Projects.Dtos;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
-namespace BugFix.Api.Services;
+namespace BugFix.Api.Services.Projects;
 
 public sealed class ProjectMemberService : IProjectMemberService
 {

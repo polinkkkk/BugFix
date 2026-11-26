@@ -1,7 +1,7 @@
 using BugFix.Api.Views.Projects;
 using BugFix.Api.Views.Projects.Dtos;
 
-namespace BugFix.Api.Services;
+namespace BugFix.Api.Services.Projects;
 
 public interface IProjectMemberService
 {
