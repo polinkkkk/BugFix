@@ -1,0 +1,257 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    height: 100%;
+    padding: 128px 84px 333px 83px;
+    background-color: #F5F8F7;
+    color: #193130;
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+}
+
+.container {
+    width: 100%;
+    max-width: 1273px;
+    min-height: 564px;
+    margin: 0 auto;
+    padding: 32px;
+    background-color: #ffffff;
+    border-radius: 20px;
+}
+
+.logo {
+    display: block;
+    width: 136px;
+    height: 32px;
+}
+
+.title {
+    margin: 20px 0;
+    font-size: 48px;
+    line-height: 1.2;
+    font-weight: 700;
+}
+
+.description {
+    margin: 0 0 20px;
+    color: #607f7d;
+    line-height: 24px;
+}
+
+.login-form {
+    width: 100%;
+    max-width: 918px;
+}
+
+.form-field {
+    width: 100%;
+    max-width: 823px;
+}
+
+.form-field + .form-field {
+    margin-top: 16px;
+}
+
+.form-field label {
+    display: block;
+    margin-bottom: 4px;
+    line-height: 24px;
+}
+
+.form-field input {
+    display: block;
+    width: 100%;
+    height: 42px;
+    padding: 0 15px;
+    border: 1px solid #d8e3e1;
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: #193130;
+    font: inherit;
+}
+
+.form-field input::placeholder {
+    color: #607f7d;
+    opacity: 1;
+}
+
+.form-field input:focus-visible {
+    outline: 2px solid #107873;
+    outline-offset: 2px;
+}
+
+.forgot {
+    display: block;
+    width: fit-content;
+    margin: 16px 0 0 auto;
+    line-height: 24px;
+}
+
+a {
+    color: #193130;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+a:hover {
+    color: #107873;
+}
+
+button {
+    display: block;
+    width: 100%;
+    max-width: 725px;
+    min-height: 40px;
+    margin-top: 16px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    background-color: #0f766e;
+    color: #ffffff;
+    font: inherit;
+}
+
+button:hover {
+    background-color: #0c625e;
+}
+
+button:focus-visible,
+a:focus-visible {
+    outline: 2px solid #107873;
+    outline-offset: 4px;
+}
+
+.footer {
+    margin: 20px 0 0;
+    color: #5C7774;
+    line-height: 24px;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+.notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    width: 100%;
+    max-width: 823px;
+    min-height: 52px;
+    margin-bottom: 24px;
+    padding: 14px 16px;
+    border: 1px solid #fda29b;
+    border-radius: 8px;
+    background: #fef3f2;
+    color: #b42318;
+    line-height: 22px;
+}
+
+#form-message-text {
+    font-weight: 700;
+}
+
+#form-message-description {
+    margin: 4px 0 0;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.notice::before,
+.field-message::before {
+    content: "!";
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border: 1.8px solid currentColor;
+    border-radius: 50%;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.notice::before {
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    font-size: 12px;
+}
+
+.field-message {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 0 0;
+    color: #b42318;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.field-message:empty {
+    display: none;
+    margin: 0;
+}
+
+.field-message::before {
+    width: 14px;
+    height: 14px;
+    font-size: 10px;
+}
+
+.form-field input.error {
+    border-color: #fda29b;
+}
+
+.form-field input.error:focus {
+    outline: none;
+}
+
+#submit-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.notice[data-state="loading"] {
+    border-color: #dce5e2;
+    background: #e5f3f0;
+    color: #193130;
+}
+
+.notice[data-state="loading"]::before {
+    color: #0f766e;
+}
+
+.form-field input:disabled {
+    background: #f5f8f7;
+    color: #5c7774;
+    opacity: 1;
+}
+
+#submit-button:disabled {
+    background: #6ca49e;
+    cursor: wait;
+}
+
+.spinner {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #bbd8d4;
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
