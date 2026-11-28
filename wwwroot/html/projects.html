@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Проекты — BugFix</title>
+    <link rel="stylesheet" href="../css/projects.css">
+    <script src="../js/api.js" defer></script>
+    <script src="../js/projects.js" defer></script>
+</head>
+<body>
+    <header class="header">
+        <a class="brand" href="projects.html">
+            <span class="brand-mark">B</span>
+            <span class="brand-title">BugFix</span>
+        </a>
+        
+        <div class="header-actions">
+            <button class="notifications" type="button">
+                <svg width="28" height="32" viewBox="0 0 28 32" fill="none">
+                    <path d="M5 13a9 9 0 0 1 18 0v7l3 4H2l3-4v-7ZM10 28a4 4 0 0 0 8 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+
+                <span class="notifications-count">2</span>
+            </button>
+
+            <div class="avatar" id="avatar">…</div>
+        </div>
+    </header>
+
+    <main class="page is-loading">
+        <div class="intro">
+            <h1>Проекты</h1>
+            <p id="page-description">
+                Загружаем ваши проекты...
+            </p>
+        </div>
+
+        <div class="notice" id="account-notice" hidden>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                <path d="m7 12 3 3 7-7" stroke="currentColor" stroke-width="2"/>
+            </svg>
+
+            <div>
+                <strong>Аккаунт создан</strong>
+                <p>Вы вошли в BugFix. Создайте свой первый проект.</p>
+            </div>
+        </div>
+
+        <section class="projects" id="projects-section">
+            <div class="projects-heading" id="projects-heading" hidden>
+                <h2 id="projects-title">Мои проекты</h2>
+
+                <a class="button" id="add-project" href="create-project.html" hidden>+ Добавить ПО</a>
+            </div>
+
+            <div class="projects-grid" id="loading"></div>
+
+            <p class="status error" id="error-message" hidden></p>
+
+            <div class="empty" id="empty-state" hidden>
+                <svg class="empty-icon" width="104" height="88" viewBox="0 0 104 88" fill="none">
+                    <rect x="2" y="16" width="100" height="70" rx="8" fill="#E5F3F0" stroke="#D8E3E1"/>
+                    <path d="M10 24V8h32l12 12h40v4M52 37v30M37 52h30" stroke="#00857D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+
+                <h3>У вас пока нет проектов</h3>
+
+                <p id="empty-description">
+                    Создайте ПО и пригласите команду для работы с багами.
+                </p>
+
+                <a class="button" id="empty-add-project" href="create-project.html">+ Добавить ПО</a>
+            </div>
+
+            <div class="projects-grid" id="projects-list" hidden></div>
+        </section>
+    </main>
+
+    <template id="skeleton-template">
+        <div class="skeleton-card">
+            <div class="skeleton-line skeleton-title"></div>
+            <div class="skeleton-line skeleton-subtitle"></div>
+            <div class="skeleton-line skeleton-meta"></div>
+            <div class="skeleton-line skeleton-action"></div>
+        </div>
+    </template>
+
+    <template id="project-template">
+        <article class="project-card">
+            <div class="project-card-heading">
+                <h3 class="project-name"></h3>
+                <p>Команда разработки</p>
+                <p class="project-role"></p>
+            </div>
+
+            <div class="project-card-body">
+                <p>
+                    Участников:
+                    <span class="members-count">…</span>
+                </p>
+
+                <p class="tickets">
+                    Открытых тикетов:
+                    <span class="tickets-count">—</span>
+                </p>
+            </div>
+
+            <a class="project-link">
+                Открыть проект
+                <span>→</span>
+            </a>
+        </article>
+    </template>
+</body>
+</html>

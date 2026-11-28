@@ -5,19 +5,11 @@ const passwordInput = document.getElementById("password");
 
 const formMessage = document.getElementById("form-message");
 const formMessageText = document.getElementById("form-message-text");
-const formMessageDescription = document.getElementById(
-    "form-message-description"
-);
+const formMessageDescription = document.getElementById("form-message-description");
 
 const submitButton = document.getElementById("submit-button");
 const submitText = document.getElementById("submit-text");
 const submitSpinner = document.getElementById("submit-spinner");
-
-
-const demoUser = {
-    email: "demyan@example.com",
-    password: "Password123!"
-};
 
 let isSubmitting = false;
 
@@ -99,18 +91,31 @@ form.addEventListener("submit", async (event) => {
         return;
     }
 
-    if (
-        email.toLowerCase() !== demoUser.email ||
-        password !== demoUser.password
-    ) {
-        showMessage(
-            "Неверная почта или пароль",
-            "error",
-            "Проверьте данные или восстановите доступ к аккаунту."
-        );
-
-        return;
-    }
-
     showLoading();
+
+    try {
+        await postJson("/api/auth/login", {
+            email: email,
+            password: password
+        });
+
+        const registered = new URLSearchParams(location.search).get("registered") === "1";
+
+        location.assign(
+            registered
+                ? "projects.html?registered=1"
+                : "projects.html"
+        );
+    } catch (error) {
+        showMessage(error.message, "error");
+    } finally {
+        isSubmitting = false;
+
+        emailInput.disabled = false;
+        passwordInput.disabled = false;
+
+        submitButton.disabled = false;
+        submitSpinner.hidden = true;
+        submitText.textContent = "Войти";
+    }
 });
